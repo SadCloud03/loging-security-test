@@ -1,2 +1,5 @@
 # Modules 
 node_modules
+
+# envirament variables
+.env
