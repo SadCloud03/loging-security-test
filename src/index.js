@@ -1,6 +1,9 @@
 //Modules:
 const express = require('express');
 const dotenv = require('dotenv').config();
+const dbConnect = require("./config/dbconection");
+
+dbConnect();
 
 const app = express();
 
