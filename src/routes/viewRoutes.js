@@ -8,6 +8,11 @@ router.get('/login', (req, res) => {
     res.render('login');
 });
 
+// Public Register Page
+router.get('/register', (req, res) => {
+    res.render('register');
+})
+
 // User Dashboard (Requires login)
 router.get('/user', verifyToken, (req, res) => {
     res.render('user', { user: req.user });
