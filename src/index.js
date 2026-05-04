@@ -4,6 +4,7 @@ const dotenv = require('dotenv').config();
 const dbConnect = require("./config/dbconection");
 const authRoutes = require("./routes/authRoutes"); 
 const userRoutes = require("./routes/userRoutes");
+const commentRoutes = require("./routes/commentRoutes");
 
 dbConnect();
 
@@ -15,6 +16,7 @@ app.use(express.json());
 //Routes
 app.use("/api/auth", authRoutes);
 app.use("/api/users", userRoutes);
+app.use("/api/comments", commentRoutes);
 
 //Error-Control
 
