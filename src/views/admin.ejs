@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Admin Panel</title>
+</head>
+<body>
+    <h1>Admin Control Center</h1>
+    
+    <section>
+        <h2>All Users</h2>
+        <table border="1">
+            <thead>
+                <tr>
+                    <th>Username</th>
+                    <th>Email</th>
+                    <th>Role</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody id="userTableBody">
+                <!-- Populated via fetch -->
+            </tbody>
+        </table>
+    </section>
+
+    <section>
+    <h2>Create User</h2>
+    <form id="createUserForm">
+        <input type="text" id="createUsername" placeholder="Username" required>
+        <input type="email" id="createEmail" placeholder="User Email" required>
+        <input type="password" id="createPassword" placeholder="Password" required>
+        <select id="createRole">
+            <option value="user">User</option>
+            <option value="admin">Admin</option>
+        </select>
+        <button type="submit">Register New User</button>
+    </form>
+    <div id="createStatus"></div>
+    </section>
+
+    <section>
+        <h2>Global Comment Moderation</h2>
+        <div id="allComments"></div>
+    </section>
+
+    <script src="/js/admin.js"></script>
+</body>
+</html>

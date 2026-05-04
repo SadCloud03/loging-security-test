@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html>
+<head><title>Login</title></head>
+<body>
+    <h1>Login Page</h1>
+    <form id="loginForm">
+        <input type="email" id="email" placeholder="user email" required><br>
+        <input type="password" id="password" placeholder="user password" required><br>
+        <button type="button" onclick="login('cookie')">cookie login</button>
+        <button type="button" onclick="login('jwt')">JWT login</button>
+    </form>
+
+    <script>
+        async function login(type) {
+            const userEmail = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+
+            const res = await fetch('/api/auth/login', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ userEmail, password })
+            });
+
+            const data = await res.json();
+            if (res.ok) {
+                // If JWT, we store it. If Cookie, your backend should set the cookie.
+                if(type === 'jwt') localStorage.setItem('token', data.token);
+                
+                // Decode token or check a role field in the response
+                window.location.href = data.role === 'admin' ? '/admin' : '/user';
+            } else {
+                alert(data.message);
+            }
+        }
+    </script>
+</body>
+</html>

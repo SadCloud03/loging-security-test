@@ -2,20 +2,22 @@ const Comment = require('../models/commentModel');
 
 const createComment = async (req, res) => {
     try {
-        const content = req.body["content"];
+        const { content } = req.body; // Destructure "content"
+        
+        if (!content) {
+            return res.status(400).json({ message: "Content is required" });
+        }
 
         const newComment = new Comment({
-            content : content, 
-            author : req.user.id
+            content, // Matches your Schema
+            author: req.user.id // From verifyToken middleware
         });
 
-        const savedComment = await newComment.save();
-        res.status(201).json(savedComment)
+        await newComment.save();
+        res.status(201).json(newComment);
     } catch (err) {
-        console.log(err);
-        res.status(500).json({
-            message : "Could not save comment"
-        });
+        console.log(err); // This is where your current terminal error is coming from
+        res.status(500).json({ message: "Server error" });
     }
 };
 

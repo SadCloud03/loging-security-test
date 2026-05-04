@@ -23,4 +23,7 @@ Login page, with authentication, the ability to choose persistent sessions with 
 * **express** : ^5.2.1
 * **jsonwebtoken** : ^9.0.3
 * **mongoose** : ^9.6.1
+* **ejs** : ^5.0.2
+* **cookie-parser** : ^1.4.7
 * **nodemon** : ^3.1.14
+

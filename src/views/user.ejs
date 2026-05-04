@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>User Dashboard</title>
+</head>
+<body>
+    <nav>
+        <h1>Welcome, <%= user ? user.username : 'User' %></h1>
+        <button onclick="logout()">Logout</button>
+    </nav>
+
+    <main>
+        <section id="profile">
+            <h3>Update Profile</h3>
+            <p>Email: <strong><%= user ? user.userEmail : 'N/A' %></strong></p>
+            <form id="updateForm">
+                <input type="text" id="newUsername" placeholder="New Username">
+                <input type="password" id="newPassword" placeholder="New Password">
+                <button type="submit">Update Info</button>
+            </form>
+        </section>
+
+        <section id="comments">
+            <h3>Comments Feed</h3>
+            <form id="commentForm">
+                <textarea id="commentContent" placeholder="Write a comment..." required></textarea>
+                <button type="submit">Post Comment</button>
+            </form>
+            <hr>
+            <div id="commentsList">
+                <!-- loaded by JS -->
+            </div>
+        </section>
+    </main>
+
+    <script src="/js/user.js"></script>
+</body>
+</html>
