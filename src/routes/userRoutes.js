@@ -1,19 +1,14 @@
 const express = require('express');
-const verifyToken = require('../middlewares/authMiddleware');
-const authorizeRole = require('../middlewares/roleMiddleware')
-
 const router = express.Router();
+const { getAllUsers, updateMe, deleteUser } = require('../controllers/userController');
+const verifyToken = require('../middlewares/authMiddleware');
+const authorizeRole = require('../middlewares/roleMiddleware');
 
-router.get('/admin', verifyToken, authorizeRole("admin"),  (req, res) => {
-    res.json({
-        message : "Welcome admin"
-    });
-});
+// Route for a user to update their own profile
+router.put('/me', verifyToken, authorizeRole('admin', 'user'), updateMe);
 
-router.get('/user', verifyToken, authorizeRole("admin", "user"), (req, res) => {
-    res.json({
-        message : "Welcome user"
-    });
-});
+// Routes for Admins only
+router.get('/', verifyToken, authorizeRole('admin'), getAllUsers);
+router.delete('/:id', verifyToken, authorizeRole('admin'), deleteUser);
 
 module.exports = router;

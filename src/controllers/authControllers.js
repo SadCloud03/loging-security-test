@@ -4,10 +4,10 @@ const User = require('../models/userModel');
 
 const register = async (req, res) => {
     try {
-        const {username, password, role} = req.body;
+        const {username, userEmail, password, role} = req.body;
         const hashedPassword = await bcrypt.hash(password, 10);
 
-        const newUser = new User({username : username, password : hashedPassword, role : role})
+        const newUser = new User({username : username, userEmail : userEmail, password : hashedPassword, role : role})
         await newUser.save()
 
         res.status(201).json({message : `User created with username : ${username}`});
@@ -19,21 +19,21 @@ const register = async (req, res) => {
 
 const login = async (req, res) => {
     try {
-        const {username, password} = req.body;
-        const user = await User.findOne({ username });
+        const {userEmail, password} = req.body;
+        const email = await User.findOne({ userEmail });
 
-        if (!user) {
+        if (!email) {
             return res.status(404).json({message : "User not found"});
         }
 
-        const isMatch = await bcrypt.compare( password, user.password)
+        const isMatch = await bcrypt.compare( password, email.password)
 
         if (!isMatch) {
             return res.status(400).json({message : "Invalid credentials"})
         }
 
         const token = jwt.sign(
-            {id : user._id, role : user.role}, 
+            {id : email._id, role : email.role}, 
             process.env.JWT_SECRET,
             { expiresIn : "1h"}
         );
