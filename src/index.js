@@ -2,6 +2,7 @@
 const express = require('express');
 const dotenv = require('dotenv').config();
 const dbConnect = require("./config/dbconection");
+const authRoutes = require("./routes/authRoutes"); 
 
 dbConnect();
 
@@ -11,6 +12,7 @@ const app = express();
 app.use(express.json());
 
 //Routes
+app.use("/api/auth", authRoutes)
 
 //Error-Control
 
