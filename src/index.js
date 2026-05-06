@@ -1,9 +1,11 @@
 //Modules:
 const express = require('express');
+const helmet = require('helmet');
 const dotenv = require('dotenv').config();
 const cookieParser = require('cookie-parser');
 const dbConnect = require("./config/dbconection");
 const path = require('path');
+
 
 // API Routes
 const authRoutes = require("./routes/authRoutes"); 
@@ -21,6 +23,13 @@ const app = express();
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
+app.use(helmet());
+app.use((req, res, next) => {
+    res.set('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate');
+    res.set('Pragma', 'no-cache');
+    res.set('Expires', '0');
+    next();
+});
 app.use(express.static(path.join(__dirname, 'public'))); // For your CSS/JS files
 app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, 'views'));

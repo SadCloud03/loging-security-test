@@ -1,13 +1,49 @@
-// --- begining ---
+// --- Auth Helper ---
+function authFetch(url, options = {}) {
+    const token = localStorage.getItem('token');
+    if (token) {
+        options.headers = {
+            ...options.headers,
+            'Authorization': `Bearer ${token}`
+        };
+    }
+    options.credentials = 'include';
+    return fetch(url, options);
+}
+
+// --- beginning ---
 document.addEventListener('DOMContentLoaded', () => {
+    loadUserInfo();
     loadComments();
 });
+
+// If JWT mode, username/email won't be server-rendered — fetch them from the API
+async function loadUserInfo() {
+    const usernameEl = document.getElementById('displayUsername');
+    const emailEl = document.getElementById('displayEmail');
+
+    // Already populated server-side (cookie mode)
+    if (usernameEl && usernameEl.textContent.trim() !== '') return;
+
+    try {
+        const res = await authFetch('/api/users/me');
+        if (!res.ok) {
+            window.location.replace('/login');
+            return;
+        }
+        const user = await res.json();
+        if (usernameEl) usernameEl.textContent = user.username;
+        if (emailEl) emailEl.textContent = user.userEmail;
+    } catch (err) {
+        console.error("Error loading user info:", err);
+    }
+}
 
 // --- section : comments  ---
 
 async function loadComments() {
     try {
-        const res = await fetch('/api/comments', { credentials: 'include' });
+        const res = await authFetch('/api/comments');
         
         if (!res.ok) throw new Error("Unauthorized or server error");
         
@@ -42,7 +78,7 @@ document.getElementById('commentForm').addEventListener('submit', async (e) => {
     if (!contentValue) return;
 
     try {
-        const res = await fetch('/api/comments', {
+        const res = await authFetch('/api/comments', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ content: contentValue })
@@ -76,7 +112,7 @@ document.getElementById('updateForm').addEventListener('submit', async (e) => {
     }
 
     try {
-        const res = await fetch('/api/users/me', { 
+        const res = await authFetch('/api/users/me', { 
             method: 'PUT',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(updateData)
@@ -97,21 +133,38 @@ document.getElementById('updateForm').addEventListener('submit', async (e) => {
 // --- Support Functions ---
 
 function renderDeleteButton(comment) {
-    return `<button onclick="deleteMyComment('${comment._id}')" style="color: red;">Delete</button>`;
+    return `<button class="delete-comment-btn" data-id="${comment._id}" style="color: red;">Delete</button>`;
 }
 
-async function deleteMyComment(id) {
-    if (confirm("Delete comment?")) {
-        const res = await fetch(`/api/comments/${id}`, { method: 'DELETE' });
-        if (res.ok) {
-            loadComments();
-        } else {
-            alert("You dont have permission to delete this comment.");
+document.getElementById('commentsList').addEventListener('click', async (e) => {
+    if (e.target.classList.contains('delete-comment-btn')) {
+        const commentId = e.target.getAttribute('data-id');
+        
+        if (confirm("Sure you want to delete this?")) {
+            const res = await authFetch(`/api/comments/${commentId}`, { method: 'DELETE' });
+            if (res.ok) {
+                loadComments();
+            } else {
+                const error = await res.json();
+                alert(error.message || "No authorization or Error");
+            }
         }
     }
-}
+});
+
+document.querySelector('.logout-btn').addEventListener('click', () => {
+    if (confirm("Sure you want to logout?")) {
+        logout();
+    }
+});
 
 async function logout() {
-    document.cookie = "token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
-    window.location.href = '/login';
+    try {
+        document.cookie = "sessionId=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+        localStorage.clear();
+        sessionStorage.clear();
+        window.location.replace('/login');
+    } catch (err) {
+        window.location.href = '/login';
+    }
 }

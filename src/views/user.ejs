@@ -6,14 +6,14 @@
 </head>
 <body>
     <nav>
-        <h1>Welcome, <%= user ? user.username : 'User' %></h1>
-        <button onclick="logout()">Logout</button>
+        <h1>Welcome, <span id="displayUsername"><%= user ? user.username : '' %></span></h1>
+        <button class="logout-btn">Logout</button>
     </nav>
 
     <main>
         <section id="profile">
             <h3>Update Profile</h3>
-            <p>Email: <strong><%= user ? user.userEmail : 'N/A' %></strong></p>
+            <p>Email: <strong id="displayEmail"><%= user ? user.userEmail : '' %></strong></p>
             <form id="updateForm">
                 <input type="text" id="newUsername" placeholder="New Username">
                 <input type="password" id="newPassword" placeholder="New Password">

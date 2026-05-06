@@ -1,12 +1,15 @@
 const Comment = require('../models/commentModel');
+const xss = require('xss')
 
 const createComment = async (req, res) => {
     try {
-        const { content } = req.body; // Destructure "content"
+        const content = xss(req.body.content); // Destructure "content"
         
         if (!content) {
             return res.status(400).json({ message: "Content is required" });
         }
+
+        
 
         const newComment = new Comment({
             content, // Matches your Schema

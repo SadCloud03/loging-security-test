@@ -11,49 +11,18 @@
 <body>
     <h1>Login Page</h1>
     <form id="loginForm">
-        <input type="email" id="email" placeholder="user email" required><br>
-        <input type="password" id="password" placeholder="user password" required><br>
+        <input type="email" id="loginEmail" placeholder="user email" required><br>
+        <input type="password" id="loginPassword" placeholder="user password" required><br>
         
         <div class="actions">
-            <button type="button" onclick="login('cookie')">Cookie Login</button>
-            <button type="button" onclick="login('jwt')">JWT Login</button>
+            <button type="button" class="login-btn" data-type="cookie">Cookie Login</button>
+            <button type="button" class="login-btn" data-type="jwt">JWT Login</button>
         </div>
     </form>
 
     <div class="register-link">
         <p>Don't have an account? <a href="/register">Register here</a></p>
     </div>
-
-    <script>
-        async function login(type) {
-            const userEmail = document.getElementById('email').value;
-            const password = document.getElementById('password').value;
-
-            try {
-                const res = await fetch('/api/auth/login', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ userEmail, password }) 
-                });
-
-                const data = await res.json();
-                
-                if (res.ok) {
-                    // if user select JWT, is saved in localStorage
-                    if(type === 'jwt' && data.token) {
-                        localStorage.setItem('token', data.token);
-                    }
-                    
-                    // Redirect based in user role
-                    window.location.href = data.role === 'admin' ? '/admin' : '/user';
-                } else {
-                    alert(data.message || "Login failed");
-                }
-            } catch (err) {
-                console.error("Login error:", err);
-                alert("Connection error to the server.");
-            }
-        }
-    </script>
+    <script src="/js/login.js"></script>
 </body>
 </html>

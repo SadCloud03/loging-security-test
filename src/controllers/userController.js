@@ -1,10 +1,21 @@
 const User = require('../models/userModel');
 const bcrypt = require('bcryptjs');
 
+// USER: Get own profile
+const getMe = async (req, res) => {
+    try {
+        const user = await User.findById(req.user.id).select('-password');
+        if (!user) return res.status(404).json({ message: "User not found" });
+        res.status(200).json(user);
+    } catch (err) {
+        res.status(500).json({ message: "Error fetching user" });
+    }
+};
+
 // ADMIN ONLY: Get all users
 const getAllUsers = async (req, res) => {
     try {
-        const users = await User.find().select('-password'); // Never send passwords back
+        const users = await User.find().select('-password');
         res.status(200).json(users);
     } catch (err) {
         res.status(500).json({ message: "Error fetching users" });
@@ -20,7 +31,6 @@ const updateMe = async (req, res) => {
         if (username) updates.username = username;
         if (userEmail) updates.userEmail = userEmail;
         
-        // If updating password, it MUST be re-hashed
         if (password) {
             updates.password = await bcrypt.hash(password, 10);
         }
@@ -50,4 +60,4 @@ const deleteUser = async (req, res) => {
     }
 };
 
-module.exports = { getAllUsers, updateMe, deleteUser };
+module.exports = { getMe, getAllUsers, updateMe, deleteUser };

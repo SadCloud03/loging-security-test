@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const { createComment, getALLcomments, deleteComment } = require('../controllers/commentControllers');
 const verifyToken = require('../middlewares/authMiddleware');
+const authorizeRole = require('../middlewares/roleMiddleware');
 
 // Public route
 router.get('/', getALLcomments);

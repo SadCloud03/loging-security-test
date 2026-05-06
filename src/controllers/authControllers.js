@@ -19,35 +19,30 @@ const register = async (req, res) => {
 
 const login = async (req, res) => {
     try {
-        const {userEmail, password} = req.body;
-        const email = await User.findOne({ userEmail });
+        const { userEmail, password, type } = req.body; // 'type' viene del botón clickeado
+        const user = await User.findOne({ userEmail });
 
-        if (!email) {
-            return res.status(404).json({message : "User not found"});
+        if (!user || !(await bcrypt.compare(password, user.password))) {
+            return res.status(401).json({ message: "Credenciales inválidas" });
         }
-
-        const isMatch = await bcrypt.compare( password, email.password)
-
-        if (!isMatch) {
-            return res.status(400).json({message : "Invalid credentials"})
+        // authController.js
+        if (type === 'cookie') {
+            // Generamos sesión persistente
+            res.cookie('sessionId', user._id, { 
+                httpOnly: true, 
+                sameSite: 'strict',
+                path: '/' // Asegura que la cookie esté disponible en todas las rutas
+            });
+            return res.json({ role: user.role }); // No enviamos token aquí
+        } else {
+            // Generamos JWT sin estado
+            const token = jwt.sign({ id: user._id, role: user.role }, process.env.JWT_SECRET);
+            res.clearCookie('sessionId'); // Limpiamos cookies para no mezclar
+            return res.json({ token, role: user.role });
         }
-
-        const token = jwt.sign(
-            {id : email._id, role : email.role}, 
-            process.env.JWT_SECRET,
-            { expiresIn : "1h"}
-        );
-
-        res.cookie('token', token, {
-            httpOnly : true,
-            secure : process.env.NODE_ENV === 'production',
-            maxAge: 3600000
-        })
-        
-        res.status(200).json({token, role : email.role});
 
     } catch (err) {
-        res.status(500).json({message : 'Something went wrong'});
+        res.status(500).json({ message: 'Error en el servidor' });
     }
 };
 
